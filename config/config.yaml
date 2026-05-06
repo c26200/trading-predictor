@@ -1,0 +1,74 @@
+# Trading Predictor Configuration
+# =====================================
+
+# Data Settings
+data:
+  tickers: ["AAPL", "TSLA", "BTC-USD", "ETH-USD", "SPY", "NVDA"]
+  lookback_days: 730  # 2 years
+  sequence_length: 60  # look_back window
+  prediction_horizon: 5  # predict next N steps
+  interval: "1d"
+  refresh_interval_seconds: 5
+
+# Model Settings
+model:
+  # LSTM
+  lstm:
+    units: [256, 128, 64]
+    dropout: 0.3
+    bidirectional: true
+    attention_dim: 32
+
+  # Transformer
+  transformer:
+    d_model: 128
+    num_heads: 8
+    num_encoder_blocks: 4
+    feed_forward_dim: 512
+    dropout: 0.1
+
+  # Training
+  training:
+    epochs: 10
+    batch_size: 32
+    validation_split: 0.15
+    learning_rate: 0.001
+    early_stopping_patience: 15
+    reduce_lr_patience: 7
+    reduce_lr_factor: 0.5
+    min_lr: 0.00001
+
+# Strategy Settings
+strategy:
+  confidence_threshold: 75.0
+  rsi_overbought: 70
+  rsi_oversold: 30
+  stop_loss_atr_multiplier: 2.0
+  take_profit_atr_multiplier: 4.0
+  trailing_stop_atr_multiplier: 1.5
+  max_position_risk_pct: 2.0
+  max_drawdown_limit: 15.0
+  commission_pct: 0.1
+  slippage_pct: 0.05
+
+# API Settings
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_origins: ["*"]
+  websocket_ping_interval: 10
+
+# Paths
+paths:
+  saved_models_dir: "models/saved"
+  logs_dir: "logs"
+  training_history_dir: "models/saved/history"
+
+# Simulation Mode
+simulation:
+  enabled_when_offline: true
+  synthetic_tickers: ["AAPL", "TSLA", "BTC-USD"]
+  initial_price_range:
+    AAPL: 180.0
+    TSLA: 250.0
+    BTC-USD: 65000.0
