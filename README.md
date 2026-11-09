@@ -6,6 +6,8 @@ An end-to-end stock prediction system: a PyTorch ensemble (bidirectional LSTM wi
 plus a temporal transformer) served through FastAPI, with a browser dashboard that streams
 predictions over WebSocket.
 
+![Dashboard preview](./preview.png)
+
 ---
 
 ## Architecture
