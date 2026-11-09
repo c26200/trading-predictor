@@ -1,8 +1,10 @@
 # TradeScope AI — Algorithmic Trading Prediction System
 
-**1st Place Winner — International AI Festival 2025**
+**1st place — International AI Festival 2025**
 
-A production-grade Stock Market Prediction System using Deep Learning (LSTM + Transformer ensemble) with a professional real-time dashboard.
+An end-to-end stock prediction system: a PyTorch ensemble (bidirectional LSTM with attention
+plus a temporal transformer) served through FastAPI, with a browser dashboard that streams
+predictions over WebSocket.
 
 ---
 
@@ -30,53 +32,51 @@ A production-grade Stock Market Prediction System using Deep Learning (LSTM + Tr
 └─────────────┘ └──────────────┘ └────────────────┘
 ```
 
-## Features
+## What it includes
 
-- **Dual Deep Learning Models**: Bidirectional LSTM with Attention + Temporal Transformer
-- **Weighted Ensemble**: Dynamic weight adjustment based on recent performance
-- **Real-time Dashboard**: Bloomberg-style terminal with candlestick charts, indicators, and live signals
-- **Trading Strategy Engine**: Entry/Exit signals with stop-loss, take-profit, trailing stops
-- **Risk Management**: Kelly Criterion position sizing, max drawdown guards, Sharpe/Sortino/Calmar ratios
-- **Walk-Forward Backtesting**: Commission and slippage simulation
-- **Simulation Mode**: Works offline with synthetic data generation
-- **WebSocket Streaming**: Real-time price predictions every 5 seconds
+- Bidirectional LSTM with attention and a temporal transformer, combined by a weighted
+  ensemble that shifts weight toward whichever model performed better recently
+- Signal engine with entry and exit rules, stop-loss, take-profit and trailing stops
+- Risk management: Kelly-style position sizing, drawdown guards, and Sharpe, Sortino and
+  Calmar ratios
+- Walk-forward backtesting with commission and slippage simulation
+- Simulation mode that generates synthetic prices, so the dashboard runs without network
+  access
+- WebSocket stream pushing a new prediction every five seconds
 
 ## Installation
 
 ```bash
-# Clone the repository
-git clone <repo-url>
+git clone https://github.com/c26200/trading-predictor.git
 cd trading-predictor
 
-# Run setup
-bash setup.sh
-
-# Or manually:
 python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## Quick Start
+`bash setup.sh` does the same thing in one step.
+
+## Running
 
 ```bash
-# Option 1: Demo script (starts server + opens browser)
+# Demo: starts the server and opens the dashboard
 python scripts/run_demo.py
 
-# Option 2: Start server only
+# Server only
 uvicorn src.api.main:app --host 0.0.0.0 --port 8000
-# Then open frontend/index.html in your browser
+# then open frontend/index.html
 
-# Option 3: Train models for a specific ticker
+# Train a model for one ticker
 curl -X POST http://localhost:8000/api/train/AAPL -d '{"epochs": 10}'
 ```
 
-## API Endpoints
+## API
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/predict/{ticker}` | Latest prediction with confidence |
-| GET | `/api/signals/{ticker}` | Current Entry/Exit signals |
+| GET | `/api/signals/{ticker}` | Current entry and exit signals |
 | GET | `/api/backtest/{ticker}` | Backtest results |
 | GET | `/api/portfolio` | Portfolio overview |
 | GET | `/api/metrics` | Model performance metrics |
@@ -84,58 +84,47 @@ curl -X POST http://localhost:8000/api/train/AAPL -d '{"epochs": 10}'
 | POST | `/api/train/{ticker}` | Trigger model training |
 | WS | `/ws/stream/{ticker}` | Real-time prediction stream |
 
-## Supported Tickers
+## Supported tickers
 
-- **Stocks**: AAPL, TSLA, SPY, NVDA
-- **Crypto**: BTC-USD, ETH-USD
+Stocks: AAPL, TSLA, SPY, NVDA. Crypto: BTC-USD, ETH-USD.
 
-## Performance Metrics (Example)
-
-| Ticker | Win Rate | Sharpe | Max DD | Profit Factor |
-|--------|----------|--------|--------|---------------|
-| AAPL | 62.5% | 1.85 | 8.2% | 2.1 |
-| TSLA | 58.3% | 1.42 | 12.1% | 1.7 |
-| BTC-USD | 55.1% | 1.28 | 14.5% | 1.5 |
-| SPY | 65.8% | 2.10 | 5.3% | 2.4 |
-| NVDA | 60.2% | 1.75 | 9.8% | 1.9 |
-
-*Note: Results shown are indicative. Live performance depends on market conditions and model retraining frequency.*
-
-## Project Structure
+## Project structure
 
 ```
 trading-predictor/
 ├── src/
-│   ├── data/           # Data fetching & preprocessing
-│   ├── models/         # LSTM, Transformer, Ensemble
-│   ├── strategy/       # Signals, Risk, Backtesting
+│   ├── data/           # Fetching and preprocessing
+│   ├── models/         # LSTM, Transformer, ensemble
+│   ├── strategy/       # Signals, risk, backtesting
 │   ├── api/            # FastAPI server
 │   └── training/       # Training pipeline
 ├── frontend/
 │   └── index.html      # Single-file dashboard
-├── scripts/            # Demo & training scripts
+├── scripts/            # Demo and training helpers
 ├── config/             # YAML configuration
 ├── models/saved/       # Trained model storage
-├── logs/               # Application logs
 └── requirements.txt
 ```
 
 ## Configuration
 
-Edit `config/config.yaml` to customize:
-- Ticker list and data settings
-- Model hyperparameters (LSTM units, Transformer heads, etc.)
-- Strategy thresholds (confidence, RSI, ATR multipliers)
-- API host/port
+`config/config.yaml` controls the ticker list, data settings, model hyperparameters (LSTM
+units, transformer heads), strategy thresholds (confidence, RSI, ATR multipliers) and the
+API host and port.
 
-## Technology Stack
+## Stack
 
-- **ML**: TensorFlow 2.x (LSTM + Transformer)
-- **Data**: yfinance, pandas, numpy, ta (technical analysis)
-- **API**: FastAPI + Uvicorn + WebSockets
-- **Frontend**: Vanilla HTML/CSS/JS + Lightweight Charts v4
+- **ML**: PyTorch 2.x
+- **Data**: yfinance, pandas, numpy, ta
+- **API**: FastAPI, Uvicorn, WebSockets
+- **Frontend**: vanilla HTML/CSS/JS with Lightweight Charts v4
 - **Scheduling**: APScheduler
 
----
+## Notes
 
-*Built for the International AI Festival 2025 — Algorithmic Trading Challenge*
+Trained weights are not committed — `models/saved/` ships empty, so you have to train a
+ticker before predictions are meaningful. Backtest results depend on the date range and
+data source; the backtester reports accuracy, Sharpe and maximum drawdown for each run
+instead of fixed figures.
+
+This is a research and portfolio project, not financial advice.
