@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TradeScope — six candidates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Spectral:wght@400;500;600&family=Rubik:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #d9d9d4; padding: 24px; font-family: "IBM Plex Sans", sans-serif; }
+  .grid { display: grid; grid-template-columns: repeat(3, 480px); gap: 18px; width: max-content; }
+  .thumb { width: 480px; height: 300px; position: relative; overflow: hidden; outline: 1px solid rgba(0,0,0,.15); }
+  .label { position: absolute; left: 8px; bottom: 6px; font: 500 9px/1 "IBM Plex Mono", monospace; letter-spacing: .08em; opacity: .55; text-transform: uppercase; }
+
+  /* 1 · Dumbar — Signal Field */
+  .t1 { background: #0A0F14; color: #F2F2ED; padding: 14px 16px; display: grid; grid-template-columns: 92px 1fr 104px; gap: 12px; }
+  .t1 .rail { border-right: 1px solid #26313A; padding-right: 10px; font: 400 7px/1.7 "IBM Plex Mono", monospace; color: #7C8A94; }
+  .t1 .rail b { display: block; color: #F2F2ED; font-size: 9px; margin-top: 1px; }
+  .t1 .rail .on { color: #C8F169; }
+  .t1 .mid { display: flex; flex-direction: column; }
+  .t1 .top { font: 500 7px/1 "IBM Plex Mono", monospace; color: #7C8A94; letter-spacing: .12em; display: flex; justify-content: space-between; }
+  .t1 .sym { font: 700 9px/1 "IBM Plex Mono", monospace; color: #C8F169; margin-top: 8px; letter-spacing: .18em; }
+  .t1 .price { font: 400 64px/.86 "Anton", sans-serif; letter-spacing: -.02em; margin-top: 2px; }
+  .t1 .pred { font: 400 8px/1 "IBM Plex Mono", monospace; color: #7C8A94; margin-top: 6px; }
+  .t1 .sig { background: #C8F169; color: #0A0F14; padding: 10px 8px; display: flex; flex-direction: column; justify-content: space-between; }
+  .t1 .sig .k { font: 500 6.5px/1 "IBM Plex Mono", monospace; letter-spacing: .14em; }
+  .t1 .sig .v { font: 400 30px/.9 "Anton", sans-serif; }
+  .t1 .sig .d { font: 600 7px/1.4 "IBM Plex Mono", monospace; }
+  .t1 svg { width: 100%; height: 48px; margin-top: 8px; }
+
+  /* 2 · Boom — Market Bulletin */
+  .t2 { background: #EFEAE0; color: #1B1A17; padding: 12px 14px; font-family: "Spectral", serif; }
+  .t2 .mast { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #1B1A17; padding-bottom: 5px; }
+  .t2 .mast h1 { font: 600 17px/1 "Spectral", serif; letter-spacing: -.01em; }
+  .t2 .mast span { font: 400 6.5px/1 "IBM Plex Mono", monospace; letter-spacing: .1em; }
+  .t2 .cols { display: grid; grid-template-columns: 1.35fr 1fr 1fr; gap: 12px; margin-top: 9px; }
+  .t2 h2 { font: 500 6.5px/1 "IBM Plex Mono", monospace; letter-spacing: .14em; text-transform: uppercase; border-bottom: 1px solid #1B1A17; padding-bottom: 3px; margin-bottom: 5px; }
+  .t2 .big { font: 500 34px/.95 "Spectral", serif; letter-spacing: -.02em; }
+  .t2 .small { font: 400 7px/1.5 "IBM Plex Mono", monospace; color: #5B5750; }
+  .t2 .row { display: flex; justify-content: space-between; font: 400 7px/1.9 "IBM Plex Mono", monospace; border-bottom: 1px solid #D5CEBF; }
+  .t2 .row b { font-weight: 600; }
+  .t2 .chart { border-top: 1px solid #1B1A17; border-bottom: 1px solid #1B1A17; margin-top: 6px; }
+
+  /* 3 · Fey — dense terminal */
+  .t3 { background: #0E1116; color: #E7E9EC; padding: 12px 14px; font-family: "IBM Plex Sans", sans-serif; }
+  .t3 .bar { display: flex; justify-content: space-between; font: 500 7px/1 "IBM Plex Mono", monospace; color: #8A919B; letter-spacing: .08em; }
+  .t3 .head { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 10px; border-bottom: 1px solid #242A33; padding-bottom: 7px; }
+  .t3 .head .p { font: 500 34px/1 "IBM Plex Sans", sans-serif; letter-spacing: -.02em; }
+  .t3 .head .p small { font: 400 8px/1 "IBM Plex Mono", monospace; color: #8A919B; margin-left: 6px; }
+  .t3 .mods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 8px; }
+  .t3 .mod { border: 1px solid #242A33; padding: 6px 7px; }
+  .t3 .mod h3 { font: 500 6px/1 "IBM Plex Mono", monospace; color: #8A919B; letter-spacing: .12em; text-transform: uppercase; }
+  .t3 .mod .n { font: 500 17px/1.2 "IBM Plex Sans", sans-serif; margin-top: 3px; }
+  .t3 .mod .s { font: 400 6.5px/1 "IBM Plex Mono", monospace; color: #8A919B; }
+  .t3 .sig { border: 1px solid #3D6BFF; background: rgba(61,107,255,.12); }
+  .t3 .sig .n { color: #7D9BFF; }
+
+  /* 4 · Mercury — calm fintech */
+  .t4 { background: #F7F6F1; color: #16181A; padding: 12px 16px; font-family: "IBM Plex Sans", sans-serif; }
+  .t4 .nav { display: flex; justify-content: space-between; align-items: center; font: 500 6.5px/1 "IBM Plex Mono", monospace; color: #6B6F6A; letter-spacing: .1em; }
+  .t4 .nav b { color: #16181A; font: 600 8px/1 "IBM Plex Sans", sans-serif; letter-spacing: .02em; }
+  .t4 .hero { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 14px; }
+  .t4 .hero .k { font: 500 6.5px/1 "IBM Plex Mono", monospace; color: #6B6F6A; letter-spacing: .14em; }
+  .t4 .hero .price { font: 500 42px/.95 "Spectral", serif; letter-spacing: -.02em; margin-top: 3px; }
+  .t4 .hero .chg { font: 500 7.5px/1 "IBM Plex Mono", monospace; color: #B4442F; margin-top: 4px; }
+  .t4 .hero svg { width: 180px; height: 54px; }
+  .t4 .cards { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; margin-top: 12px; }
+  .t4 .card { border: 1px solid #DCD9D1; background: #FCFBF8; padding: 7px 8px; }
+  .t4 .card h3 { font: 500 6px/1 "IBM Plex Mono", monospace; color: #6B6F6A; letter-spacing: .12em; text-transform: uppercase; }
+  .t4 .card .n { font: 500 16px/1.3 "IBM Plex Sans", sans-serif; margin-top: 4px; }
+  .t4 .card .s { font: 400 6.5px/1.5 "IBM Plex Mono", monospace; color: #6B6F6A; }
+  .t4 .green { color: #1F5E4B; }
+
+  /* 5 · Pure CSS — Market Geometry */
+  .t5 { background: #EFEDE6; color: #111; padding: 12px 14px; font-family: "Rubik", sans-serif; }
+  .t5 .top { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #111; padding-bottom: 4px; }
+  .t5 .top b { font: 700 11px/1 "Rubik", sans-serif; letter-spacing: -.01em; }
+  .t5 .top span { font: 400 6.5px/1 "Space Mono", monospace; }
+  .t5 .body { display: grid; grid-template-columns: 1fr 96px; gap: 10px; margin-top: 8px; }
+  .t5 .chart { position: relative; height: 168px; border-left: 2px solid #111; border-bottom: 2px solid #111; }
+  .t5 .bars { position: absolute; inset: 0 0 0 8px; display: flex; align-items: flex-end; gap: 3px; }
+  .t5 .bars i { flex: 1; background: #111; display: block; }
+  .t5 .bars i.o { background: #E4572E; }
+  .t5 .bars i.b { background: #2E5EAA; }
+  .t5 .side .box { border: 2px solid #111; padding: 6px; margin-bottom: 6px; }
+  .t5 .side .big { background: #E4572E; color: #111; border: 2px solid #111; padding: 8px 6px; }
+  .t5 .side .big b { font: 700 22px/1 "Rubik", sans-serif; }
+  .t5 .side .k { font: 400 6px/1 "Space Mono", monospace; letter-spacing: .1em; }
+  .t5 .side .n { font: 700 10px/1.2 "Rubik", sans-serif; }
+
+  /* 6 · Hanzi poster */
+  .t6 { background: #F2EFE8; color: #14120F; padding: 12px 14px; font-family: "Anton", sans-serif; position: relative; }
+  .t6 .mono { font: 400 6.5px/1.6 "Space Mono", monospace; letter-spacing: .08em; }
+  .t6 .giant { font: 400 118px/.78 "Anton", sans-serif; letter-spacing: -.03em; margin-top: 6px; }
+  .t6 .red { color: #C8321E; }
+  .t6 .cols { position: absolute; right: 14px; top: 12px; width: 96px; text-align: right; }
+  .t6 .cols .r { border-top: 1px solid #14120F; padding: 4px 0; }
+  .t6 .cols .r b { font: 400 8px/1 "Space Mono", monospace; }
+  .t6 .bot { position: absolute; left: 14px; bottom: 12px; display: flex; gap: 18px; }
+  .t6 .bot div b { font: 400 16px/1 "Anton", sans-serif; }
+</style>
+</head>
+<body>
+<div class="grid">
+
+  <!-- 1 -->
+  <div class="thumb t1">
+    <div class="rail">
+      <div class="on">AAPL<b>185.12</b></div>
+      <div>TSLA<b>—</b></div>
+      <div>BTC-USD<b>—</b></div>
+      <div>ETH-USD<b>—</b></div>
+      <div>SPY<b>—</b></div>
+      <div>NVDA<b>—</b></div>
+    </div>
+    <div class="mid">
+      <div class="top"><span>TRADESCOPE</span><span>SIMULATION · 17:40 UTC</span></div>
+      <div class="sym">AAPL · NASDAQ</div>
+      <div class="price">185.12</div>
+      <div class="pred">PREDICTED $182.28 · DOWN</div>
+      <svg viewBox="0 0 200 40" preserveAspectRatio="none">
+        <polyline fill="none" stroke="#7C8A94" stroke-width="1" points="0,28 20,26 40,29 60,20 80,22 100,14 120,17 140,10 160,13 180,7 200,9"/>
+        <polyline fill="none" stroke="#C8F169" stroke-width="1.6" points="0,30 20,27 40,31 60,21 80,24 100,15 120,18 140,11 160,14 180,8 200,5"/>
+      </svg>
+    </div>
+    <div class="sig">
+      <div class="k">SIGNAL</div>
+      <div class="v">HOLD</div>
+      <div class="d">DIR DOWN<br>RSI 53.93</div>
+    </div>
+    <div class="label">01 · Dumbar — Signal Field</div>
+  </div>
+
+  <!-- 2 -->
+  <div class="thumb t2">
+    <div class="mast"><h1>TradeScope Bulletin</h1><span>SIMULATION · 17:40 UTC</span></div>
+    <div class="cols">
+      <div>
+        <h2>Instrument</h2>
+        <div class="big">AAPL</div>
+        <div class="small">185.12 · predicted 182.28<br>direction down</div>
+        <div class="chart"><svg width="100%" height="52" viewBox="0 0 180 52" preserveAspectRatio="none"><polyline fill="none" stroke="#1B1A17" stroke-width="1.2" points="0,40 18,38 36,41 54,30 72,33 90,22 108,26 126,16 144,19 162,10 180,12"/></svg></div>
+      </div>
+      <div>
+        <h2>Signal</h2>
+        <div class="big" style="font-size:30px">HOLD</div>
+        <div class="small">confidence 0.5</div>
+        <h2 style="margin-top:12px">Model</h2>
+        <div class="row"><span>RSI</span><b>53.93</b></div>
+        <div class="row"><span>MACD</span><b>0.09</b></div>
+        <div class="row"><span>BB width</span><b>0.06</b></div>
+      </div>
+      <div>
+        <h2>Portfolio</h2>
+        <div class="row"><span>Capital</span><b>100,000</b></div>
+        <div class="row"><span>Return</span><b>0.00%</b></div>
+        <div class="row"><span>Sharpe</span><b>0.000</b></div>
+        <div class="row"><span>Trades</span><b>0</b></div>
+        <div class="small" style="margin-top:6px">Awaiting signals.</div>
+      </div>
+    </div>
+    <div class="label">02 · Irma Boom — Market Bulletin</div>
+  </div>
+
+  <!-- 3 -->
+  <div class="thumb t3">
+    <div class="bar"><span>TRADESCOPE AI</span><span>SIMULATION · 17:40:58 UTC · SOUND ON</span></div>
+    <div class="head">
+      <div class="p">185.12 <small>AAPL · +0.00%</small></div>
+      <div style="font:500 7px/1 'IBM Plex Mono',monospace;color:#8A919B">PRED 182.28 · DOWN</div>
+    </div>
+    <div class="mods">
+      <div class="mod sig"><h3>Signal</h3><div class="n">HOLD</div><div class="s">confidence 0.50</div></div>
+      <div class="mod"><h3>RSI 14</h3><div class="n">53.93</div><div class="s">neutral</div></div>
+      <div class="mod"><h3>MACD</h3><div class="n">0.09</div><div class="s">signal 0.10</div></div>
+      <div class="mod"><h3>Sharpe</h3><div class="n">0.000</div><div class="s">sortino 0.000</div></div>
+      <div class="mod"><h3>Win rate</h3><div class="n">0.0%</div><div class="s">0 trades</div></div>
+      <div class="mod"><h3>Equity</h3><div class="n">98,750</div><div class="s">max dd 0.00%</div></div>
+    </div>
+    <div class="label">03 · Fey — Dense Terminal</div>
+  </div>
+
+  <!-- 4 -->
+  <div class="thumb t4">
+    <div class="nav"><b>TradeScope</b><span>OVERVIEW · SIGNALS · PORTFOLIO · BACKTEST</span><span>SIMULATION</span></div>
+    <div class="hero">
+      <div>
+        <div class="k">AAPL · NASDAQ</div>
+        <div class="price">185.12</div>
+        <div class="chg">▼ 0.00% · predicted 182.28</div>
+      </div>
+      <svg viewBox="0 0 180 54" preserveAspectRatio="none">
+        <path d="M0 42 L18 39 L36 44 L54 32 L72 35 L90 24 L108 28 L126 18 L144 21 L162 12 L180 14 L180 54 L0 54 Z" fill="rgba(31,94,75,.08)"/>
+        <path d="M0 42 L18 39 L36 44 L54 32 L72 35 L90 24 L108 28 L126 18 L144 21 L162 12 L180 14" fill="none" stroke="#1F5E4B" stroke-width="1.3"/>
+      </svg>
+    </div>
+    <div class="cards">
+      <div class="card"><h3>Signal</h3><div class="n green">HOLD</div><div class="s">low confidence</div></div>
+      <div class="card"><h3>Portfolio</h3><div class="n">$100,000</div><div class="s">return 0.00% · 0 trades</div></div>
+      <div class="card"><h3>Diagnostics</h3><div class="s">RSI 53.93 · MACD 0.09 · BB 0.06</div><div class="s">Sharpe 0.000 · Sortino 0.000</div></div>
+    </div>
+    <div class="label">04 · Mercury — Calm Fintech</div>
+  </div>
+
+  <!-- 5 -->
+  <div class="thumb t5">
+    <div class="top"><b>TRADESCOPE / GEOMETRY</b><span>SIMULATION 17:40 UTC</span></div>
+    <div class="body">
+      <div class="chart">
+        <div class="bars">
+          <i style="height:34%"></i><i class="b" style="height:46%"></i><i style="height:40%"></i>
+          <i style="height:55%"></i><i class="o" style="height:49%"></i><i style="height:62%"></i>
+          <i class="b" style="height:58%"></i><i style="height:70%"></i><i style="height:64%"></i>
+          <i class="o" style="height:78%"></i><i style="height:72%"></i><i class="b" style="height:86%"></i>
+          <i style="height:80%"></i><i style="height:94%"></i>
+        </div>
+      </div>
+      <div class="side">
+        <div class="big"><div class="k">SIGNAL</div><b>HOLD</b></div>
+        <div class="box"><div class="k">PRICE</div><div class="n">185.12</div></div>
+        <div class="box"><div class="k">PRED</div><div class="n">182.28</div></div>
+        <div class="box"><div class="k">RSI</div><div class="n">53.93</div></div>
+      </div>
+    </div>
+    <div class="label">05 · Lynn Fisher — Market Geometry</div>
+  </div>
+
+  <!-- 6 -->
+  <div class="thumb t6">
+    <div class="mono">TRADESCOPE AI · SIMULATION · 17:40 UTC</div>
+    <div class="giant">AA<span class="red">PL</span></div>
+    <div class="cols">
+      <div class="r mono">PRICE<br><b>185.12</b></div>
+      <div class="r mono">PRED<br><b>182.28</b></div>
+      <div class="r mono">SIGNAL<br><b>HOLD</b></div>
+      <div class="r mono">RSI<br><b>53.93</b></div>
+    </div>
+    <div class="bot">
+      <div><div class="mono">RETURN</div><b>0.00%</b></div>
+      <div><div class="mono">SHARPE</div><b>0.000</b></div>
+      <div><div class="mono">TRADES</div><b>0</b></div>
+    </div>
+    <div class="label">06 · Hanzi Poster — Monument</div>
+  </div>
+
+</div>
+</body>
+</html>

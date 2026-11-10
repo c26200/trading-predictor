@@ -4,329 +4,265 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TradeScope AI — Algorithmic Trading Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lightweight-charts@4.1.4/dist/lightweight-charts.standalone.production.js"></script>
 <style>
 /* ═══════════════════════════════════════════════════════════════
-   TRADESCOPE AI — Professional Trading Dashboard
-   Dark Terminal / Bloomberg Aesthetic
+   TRADESCOPE AI — MARKET GEOMETRY
+   Flat planes, 3px rules, Rubik + Space Mono
    ═══════════════════════════════════════════════════════════════ */
 :root {
-  --bg-primary: #0a0e1a;
-  --bg-secondary: #0f1425;
-  --bg-card: #111830;
-  --border: #1a2340;
-  --border-glow: #1e2d50;
-  --accent: #00ff88;
-  --accent-dim: #00cc6a;
-  --red: #ff3366;
-  --red-dim: #cc2952;
-  --blue: #00b4ff;
-  --blue-dim: #0088cc;
-  --text-primary: #e0e6f0;
-  --text-secondary: #8890a8;
-  --text-dim: #5a6078;
-  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
-  --font-display: 'Orbitron', sans-serif;
-  --shadow-glow: 0 0 20px rgba(0, 255, 136, 0.08);
-  --shadow-red: 0 0 20px rgba(255, 51, 102, 0.08);
-  --radius: 6px;
-  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --bg: #F2C94C;
+  --panel: #FBF4E2;
+  --ink: #111111;
+  --text-secondary: #4A4539;
+  --text-dim: #5C5648;
+  --accent: #2E5EAA;
+  --red: #B4361F;
+  --orange: #E4572E;
+  --blue: #2E5EAA;
+  --grid: rgba(17, 17, 17, 0.16);
+  --font-mono: 'Space Mono', monospace;
+  --font-display: 'Rubik', sans-serif;
+  --radius: 0px;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { height:100%; }
 body {
-  background: var(--bg-primary);
-  color: var(--text-primary);
-  font-family: var(--font-mono);
-  font-size: 12px;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 14px;
   overflow: hidden;
+  display: grid;
+  grid-template-rows: 64px 1fr 92px 112px;
+  gap: 10px;
+  padding: 0 24px 16px;
 }
+.mono { font-family: var(--font-mono); }
 
 /* ═══ HEADER ═══ */
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 24px;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
-  position: relative;
-  overflow: hidden;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 3px solid var(--ink);
 }
-.header::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  animation: scanline 3s linear infinite;
+.logo { font-size: 18px; font-weight: 700; letter-spacing: -.01em; line-height: 1.05; }
+.logo span { color: var(--orange); }
+.logo small { display: block; font-family: var(--font-mono); font-size: 12px; font-weight: 400; letter-spacing: .14em; margin-top: 3px; }
+.header-right { display: flex; align-items: center; gap: 18px; font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+.status-led { display: flex; align-items: center; gap: 8px; }
+.led { width: 10px; height: 10px; background: var(--accent); border: 2px solid var(--ink); display: inline-block; }
+.led.sim { background: var(--orange); }
+.led.offline { background: var(--red); }
+.mode-badge { background: var(--ink); color: var(--bg); padding: 4px 9px; font-size: 12px; letter-spacing: .1em; font-weight: 700; }
+.mode-badge.live { background: var(--accent); color: var(--panel); }
+.mode-badge.sim { background: var(--ink); color: var(--bg); }
+.sound-toggle {
+  border: 2px solid var(--ink); background: transparent; color: var(--ink);
+  padding: 4px 9px; font-family: var(--font-mono); font-size: 12px; cursor: pointer;
 }
-@keyframes scanline {
-  0% { opacity: 0; transform: translateY(0); }
-  50% { opacity: 0.6; }
-  100% { opacity: 0; transform: translateY(0); }
-}
-.logo {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 3px;
-  color: var(--accent);
-  text-shadow: 0 0 30px rgba(0, 255, 136, 0.3);
-}
-.logo span { color: var(--blue); }
-.status-led {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11px; color: var(--text-secondary);
-}
-.led {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 8px var(--accent);
-  animation: pulse 2s infinite;
-}
-.led.offline { background: var(--red); box-shadow: 0 0 8px var(--red); animation: none; }
-.led.sim { background: #ffaa00; box-shadow: 0 0 8px #ffaa00; animation: none; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-.mode-badge {
-  padding: 3px 10px; border-radius: 3px; font-size: 10px;
-  font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
-}
-.mode-badge.sim { background: #ffaa0022; color: #ffaa00; border: 1px solid #ffaa0044; }
-.mode-badge.live { background: #00ff8822; color: var(--accent); border: 1px solid #00ff8844; }
+.sound-toggle.active { background: var(--ink); color: var(--bg); }
 
-/* ═══ GRID LAYOUT ═══ */
-.dashboard {
-  display: grid;
-  grid-template-columns: 240px 1fr 280px;
-  grid-template-rows: 380px auto 200px;
-  gap: 10px;
-  padding: 10px;
-  height: calc(100vh - 57px);
-}
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px;
-  position: relative;
-  overflow: hidden;
-  transition: var(--transition);
-}
-.card:hover { border-color: var(--border-glow); box-shadow: var(--shadow-glow); }
-.card-title {
-  font-family: var(--font-display);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-secondary);
-  margin-bottom: 12px;
-  display: flex; align-items: center; gap: 8px;
-}
-.card-title::before {
-  content: '';
-  display: inline-block;
-  width: 6px; height: 6px;
-  background: var(--accent);
-  border-radius: 1px;
-}
+/* ═══ MAIN GRID ═══ */
+.dashboard { display: grid; grid-template-columns: 300px 1fr 300px; gap: 16px; min-height: 0; }
 
-/* Tile assignment */
-.ticker-panel { grid-row: 1/2; grid-column: 1/2; }
-.signal-panel { grid-row: 2/3; grid-column: 1/2; }
-.chart-panel { grid-row: 1/2; grid-column: 2/3; }
-.indicators-panel { grid-row: 2/3; grid-column: 2/3; display: flex; gap: 10px; }
-.portfolio-panel { grid-row: 1/2; grid-column: 3/4; }
-.backtest-panel { grid-row: 2/3; grid-column: 3/4; }
-.trade-log { grid-row: 3/4; grid-column: 1/4; }
+/* ── Left ── */
+.left { display: flex; flex-direction: column; min-height: 0; }
+.inst { font-size: 12px; letter-spacing: .12em; }
+.inst b { font-weight: 700; }
+.price { font-size: 84px; font-weight: 700; letter-spacing: -.04em; line-height: .92; margin-top: 2px; }
+.price sup { font-size: 24px; font-weight: 500; vertical-align: top; margin-left: 1px; }
+.delta { font-size: 14px; margin-top: 4px; }
+.under { border-top: 3px solid var(--ink); margin-top: 14px; padding-top: 8px; }
+.kv { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; border-bottom: 1px solid rgba(17,17,17,.35); font-size: 13px; }
+.kv b { font-size: 14px; font-weight: 700; }
+.kv .hot { color: var(--red); }
+.equity { margin-top: auto; border-top: 3px solid var(--ink); padding-top: 8px; }
+.equity .cap { font-size: 12px; letter-spacing: .12em; }
+#equity-chart { height: 104px; margin-top: 4px; }
 
-/* ═══ TICKER SELECTOR ═══ */
-.ticker-list { display: flex; flex-direction: column; gap: 6px; }
-.ticker-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 12px; border-radius: 4px;
-  background: var(--bg-secondary); border: 1px solid transparent;
-  cursor: pointer; transition: var(--transition);
+/* ── Center ── */
+.center {
+  border: 3px solid var(--ink); background: var(--panel);
+  display: flex; flex-direction: column; padding: 12px 14px 10px; min-height: 0;
 }
-.ticker-item:hover, .ticker-item.active {
-  border-color: var(--accent);
-  box-shadow: 0 0 12px rgba(0, 255, 136, 0.08);
+.cap { display: flex; justify-content: space-between; font-size: 12px; letter-spacing: .1em; }
+#main-chart { flex: 1; min-height: 0; margin-top: 6px; }
+.indics {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  height: 132px; margin-top: 8px; border-top: 2px solid var(--ink); padding-top: 8px;
 }
-.ticker-name {
-  font-family: var(--font-display);
-  font-size: 13px; font-weight: 700;
-  letter-spacing: 1px;
-}
-.ticker-price { font-size: 14px; font-weight: 600; }
-.ticker-change { font-size: 11px; }
-.ticker-change.up { color: var(--accent); }
-.ticker-change.down { color: var(--red); }
+.indics > div { display: flex; flex-direction: column; min-height: 0; }
+.indics .cap { font-size: 12px; }
+#rsi-chart, #macd-chart, #bb-chart { flex: 1; min-height: 0; margin-top: 2px; }
 
-/* ═══ SIGNAL PANEL ═══ */
-.signal-display {
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-}
+/* ── Right ── */
+.right { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
+.signal-panel { border: 3px solid var(--ink); background: var(--panel); padding: 12px; }
+.signal-head { font-size: 12px; letter-spacing: .16em; }
 .signal-type {
-  font-family: var(--font-display);
-  font-size: 24px; font-weight: 900; letter-spacing: 3px;
-  padding: 8px 24px; border-radius: 4px;
+  display: block; background: var(--orange); border: 2px solid var(--ink);
+  padding: 4px 10px 6px; font-size: 46px; font-weight: 700; line-height: 1;
+  letter-spacing: -.02em; margin-top: 8px;
 }
-.signal-type.LONG { color: var(--accent); border: 2px solid var(--accent); text-shadow: 0 0 20px rgba(0,255,136,0.4); }
-.signal-type.SHORT { color: var(--red); border: 2px solid var(--red); text-shadow: 0 0 20px rgba(255,51,102,0.4); }
-.signal-type.HOLD { color: var(--text-secondary); border: 2px solid var(--border); }
-.signal-type.EXIT { color: #ffaa00; border: 2px solid #ffaa00; }
-.signal-info { width: 100%; font-size: 11px; color: var(--text-secondary); }
-.signal-info div { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid var(--border); }
-.signal-stars { color: #ffaa00; font-size: 16px; letter-spacing: 3px; text-align: center; }
+.signal-type.HOLD { background: var(--orange); color: var(--ink); }
+.signal-type.LONG { background: var(--blue); color: var(--panel); }
+.signal-type.SHORT { background: var(--red); color: var(--panel); }
+.signal-type.EXIT { background: #C9971A; color: var(--ink); }
+.signal-stars { color: var(--ink); font-size: 16px; letter-spacing: 4px; margin-top: 8px; }
+.signal-info { width: 100%; font-size: 12px; margin-top: 4px; }
+.signal-info div { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(17,17,17,.3); }
+.confidence { margin-top: 10px; border-top: 2px solid var(--ink); padding-top: 8px; }
+.conf-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; }
+.gauge-value { font-size: 26px; font-weight: 700; }
+.gauge-container { display: none; }
 
-/* ═══ CONFIDENCE GAUGE ═══ */
-.gauge-container { display: flex; flex-direction: column; align-items: center; gap: 6px; }
-.gauge-svg { width: 80px; height: 50px; }
-.gauge-label { font-size: 11px; color: var(--text-secondary); }
-.gauge-value { font-size: 18px; font-weight: 700; color: var(--accent); }
+.tickers { margin-top: auto; }
+.tickers .cap { font-size: 12px; letter-spacing: .14em; margin-bottom: 6px; }
+.ticker-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ticker-item {
+  border: 2px solid var(--ink); padding: 6px 8px; cursor: pointer;
+  display: flex; flex-direction: column; gap: 1px; transition: background .15s;
+}
+.ticker-item:hover { background: rgba(17,17,17,.06); }
+.ticker-item.active { background: var(--ink); color: var(--bg); }
+.ticker-name { font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em; }
+.ticker-price { font-family: var(--font-mono); font-size: 14px; font-weight: 700; }
+.ticker-change { font-family: var(--font-mono); font-size: 12px; }
+.ticker-change.up { color: var(--blue); }
+.ticker-change.down { color: var(--red); }
+.ticker-item.active .ticker-change.up { color: #9FC3FF; }
+.ticker-item.active .ticker-change.down { color: #FFB39E; }
 
-/* ═══ PORTFOLIO ═══ */
+/* ═══ FOOTER METRICS ═══ */
+#portfolioMetrics {
+  display: grid; grid-template-columns: repeat(9, 1fr);
+  border: 3px solid var(--ink); background: var(--panel); min-height: 0;
+}
 .metric-row {
-  display: flex; justify-content: space-between;
-  padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-  font-size: 11px;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 8px 10px; border-right: 2px solid var(--ink); min-height: 0;
 }
-.metric-label { color: var(--text-secondary); }
-.metric-value { font-weight: 600; }
-.metric-value.positive { color: var(--accent); }
+.metric-row:last-child { border-right: none; }
+.metric-label { font-family: var(--font-mono); font-size: 12px; letter-spacing: .02em; color: var(--text-secondary); }
+.metric-value { font-size: 21px; font-weight: 700; margin-top: 2px; letter-spacing: -.01em; }
+.metric-value.positive { color: var(--blue); }
 .metric-value.negative { color: var(--red); }
 
-/* ═══ TRADE LOG TABLE ═══ */
-.log-table-wrapper { max-height: 160px; overflow-y: auto; }
-.log-table-wrapper::-webkit-scrollbar { width: 4px; }
-.log-table-wrapper::-webkit-scrollbar-track { background: transparent; }
-.log-table-wrapper::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.log-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+/* ═══ TRADE LOG ═══ */
+.trade-log { border: 3px solid var(--ink); background: var(--panel); display: flex; flex-direction: column; min-height: 0; }
+.log-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 10px; border-bottom: 2px solid var(--ink);
+  font-size: 12px; letter-spacing: .12em;
+}
+.log-table-wrapper { overflow-y: auto; flex: 1; min-height: 0; }
+.log-table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; }
 .log-table th {
-  text-align: left; padding: 6px 10px; color: var(--text-dim);
-  font-weight: 500; text-transform: uppercase; letter-spacing: 1px;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: var(--bg-card);
+  text-align: left; padding: 4px 10px; border-bottom: 1px solid var(--ink);
+  font-size: 12px; letter-spacing: .08em; background: var(--panel); position: sticky; top: 0;
 }
-.log-table td { padding: 5px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); }
-.log-row.LONG td:first-child { color: var(--accent); }
+.log-table td { padding: 4px 10px; border-bottom: 1px solid rgba(17,17,17,.18); }
+.log-row.LONG td:first-child { color: var(--blue); }
 .log-row.SHORT td:first-child { color: var(--red); }
-.log-row.EXIT td:first-child { color: #ffaa00; }
+.log-row.EXIT td:first-child { color: #8A6A00; }
 
-/* ═══ CHART CONTAINERS ═══ */
-.chart-wrap { flex: 1; position: relative; }
-#main-chart, #rsi-chart, #macd-chart, #equity-chart {
-  width: 100%; height: 100%;
-}
-.indicators-panel > .card { flex: 1; padding: 8px; }
-.indicators-panel .card-title { margin-bottom: 4px; }
+/* ═══ SKELETON ═══ */
+.skeleton { background: rgba(17,17,17,.08); animation: shimmer 1.2s infinite; }
+@keyframes shimmer { 0%,100%{opacity:.5} 50%{opacity:.9} }
 
-/* ═══ LOADING SKELETON ═══ */
-.skeleton {
-  background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-card) 50%, var(--bg-secondary) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 4px;
-}
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-
-/* ═══ SOUND TOGGLE ═══ */
-.sound-toggle {
-  background: none; border: 1px solid var(--border);
-  color: var(--text-secondary); padding: 4px 10px;
-  border-radius: 3px; cursor: pointer; font-family: var(--font-mono);
-  font-size: 10px; transition: var(--transition);
-}
-.sound-toggle.active { border-color: var(--accent); color: var(--accent); }
-
-/* ═══ RESPONSIVE ═══ */
-@media (max-width: 1200px) {
-  .dashboard { grid-template-columns: 200px 1fr 240px; }
+@media (max-width: 1280px) {
+  body { grid-template-rows: 64px 1fr 84px 100px; }
+  .dashboard { grid-template-columns: 260px 1fr 270px; }
+  .price { font-size: 68px; }
 }
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ HEADER ═══════════════ -->
+<!-- ═══ HEADER ═══ -->
 <header class="header">
-  <div class="logo">TRADE<span>SCOPE</span> AI</div>
-  <div style="display:flex;align-items:center;gap:16px;">
+  <div class="logo">TRADESCOPE <span>/</span> GEOMETRY<small>ALGORITHMIC PREDICTION SYSTEM</small></div>
+  <div class="header-right">
     <div class="status-led"><span class="led" id="statusLed"></span><span id="statusText">CONNECTING</span></div>
     <span class="mode-badge" id="modeBadge">SIM</span>
-    <span id="liveClock" style="font-size:12px;color:var(--text-secondary);"></span>
-    <button class="sound-toggle active" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">🔊 SOUND ON</button>
+    <span id="liveClock">--:--:-- UTC</span>
+    <button class="sound-toggle active" id="soundToggle" onclick="toggleSound()" title="Toggle alert sounds">SOUND ON</button>
   </div>
 </header>
 
-<!-- ═══════════════ DASHBOARD GRID ═══════════════ -->
-<div class="dashboard">
+<!-- ═══ DASHBOARD ═══ -->
+<main class="dashboard">
 
-  <!-- TICKER SELECTOR -->
-  <div class="card ticker-panel">
-    <div class="card-title">TICKERS</div>
-    <div class="ticker-list" id="tickerList"></div>
-  </div>
+  <!-- LEFT: instrument, price, equity -->
+  <section class="left">
+    <div class="inst"><b id="chartTicker">AAPL</b> / NASDAQ / USD</div>
+    <div class="price"><span id="heroPrice">185</span><sup id="heroCents">.12</sup></div>
+    <div class="delta mono" id="heroDelta">PREDICTED — / DIRECTION —</div>
 
-  <!-- SIGNAL PANEL -->
-  <div class="card signal-panel">
-    <div class="card-title">SIGNAL</div>
-    <div class="signal-display" id="signalDisplay">
+    <div class="under">
+      <div class="kv"><span>MODE</span><b id="heroMode">SIMULATION</b></div>
+      <div class="kv"><span>STREAM</span><b>5s / WebSocket</b></div>
+      <div class="kv"><span>ENGINE</span><b>LSTM + Transformer</b></div>
+    </div>
+
+    <div class="equity">
+      <div class="cap"><span>EQUITY CURVE</span><span>PORTFOLIO</span></div>
+      <div id="equity-chart"></div>
+    </div>
+  </section>
+
+  <!-- CENTER: price chart + indicators -->
+  <section class="center">
+    <div class="cap"><span>PRICE / DAILY</span><span id="lastPrice">LAST —</span></div>
+    <div id="main-chart"></div>
+    <div class="indics">
+      <div><div class="cap"><span>RSI 14</span></div><div id="rsi-chart"></div></div>
+      <div><div class="cap"><span>MACD</span></div><div id="macd-chart"></div></div>
+      <div><div class="cap"><span>BB WIDTH</span></div><div id="bb-chart"></div></div>
+    </div>
+  </section>
+
+  <!-- RIGHT: signal + tickers -->
+  <aside class="right">
+    <div class="signal-panel" id="signalDisplay">
+      <div class="signal-head">SIGNAL / <span id="signalTicker">AAPL</span></div>
       <div class="signal-type HOLD">HOLD</div>
       <div class="signal-stars" id="signalStars">---</div>
       <div class="signal-info" id="signalInfo"></div>
-      <div style="margin-top:10px;width:100%;">
-        <div class="card-title" style="margin-bottom:6px;">CONFIDENCE</div>
+      <div class="confidence">
+        <div class="conf-row"><span>CONFIDENCE</span><b class="gauge-value" id="confidenceValue">--%</b></div>
         <div class="gauge-container">
           <svg class="gauge-svg" viewBox="0 0 80 50" id="gaugeSvg">
-            <path d="M5 45 A 35 35 0 0 1 75 45" fill="none" stroke="var(--border)" stroke-width="8"/>
-            <path id="gaugeArc" d="M5 45 A 35 35 0 0 1 40 6" fill="none" stroke="var(--accent)" stroke-width="8" stroke-linecap="round"/>
+            <path d="M5 45 A 35 35 0 0 1 75 45" fill="none" stroke="var(--grid)" stroke-width="8"/>
+            <path id="gaugeArc" d="M5 45 A 35 35 0 0 1 40 6" fill="none" stroke="#2E5EAA" stroke-width="8" stroke-linecap="round"/>
           </svg>
-          <div class="gauge-value" id="confidenceValue">--%</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- MAIN CHART -->
-  <div class="card chart-panel">
-    <div class="card-title">PRICE CHART <span id="chartTicker" style="color:var(--accent);">AAPL</span></div>
-    <div class="chart-wrap"><div id="main-chart"></div></div>
-  </div>
-
-  <!-- INDICATORS -->
-  <div class="indicators-panel">
-    <div class="card"><div class="card-title">RSI (14)</div><div class="chart-wrap"><div id="rsi-chart"></div></div></div>
-    <div class="card"><div class="card-title">MACD</div><div class="chart-wrap"><div id="macd-chart"></div></div></div>
-    <div class="card" style="flex:0.5;"><div class="card-title">BB WIDTH</div><div class="chart-wrap"><div id="bb-chart"></div></div></div>
-  </div>
-
-  <!-- PORTFOLIO -->
-  <div class="card portfolio-panel">
-    <div class="card-title">PORTFOLIO</div>
-    <div id="portfolioMetrics">
-      <div class="skeleton" style="height:200px;"></div>
+    <div class="tickers">
+      <div class="cap"><span>INSTRUMENTS</span><span>SELECT</span></div>
+      <div class="ticker-list" id="tickerList"></div>
     </div>
-  </div>
+  </aside>
+</main>
 
-  <!-- BACKTEST -->
-  <div class="card backtest-panel">
-    <div class="card-title">EQUITY CURVE</div>
-    <div class="chart-wrap"><div id="equity-chart"></div></div>
-    <div id="backtestStats" style="margin-top:8px;display:flex;gap:16px;font-size:10px;color:var(--text-secondary);"></div>
-  </div>
+<!-- ═══ PORTFOLIO METRICS ═══ -->
+<section id="portfolioMetrics">
+  <div class="skeleton" style="grid-column: span 9;"></div>
+</section>
 
-  <!-- LIVE TRADE LOG -->
-  <div class="card trade-log">
-    <div class="card-title">LIVE TRADE LOG</div>
-    <div class="log-table-wrapper">
-      <table class="log-table">
-        <thead><tr><th>Time</th><th>Ticker</th><th>Type</th><th>Price</th><th>Conf</th><th>Stars</th><th>Reason</th></tr></thead>
-        <tbody id="logBody"><tr><td colspan="7" style="text-align:center;color:var(--text-dim);padding:20px;">Awaiting signals...</td></tr></tbody>
-      </table>
-    </div>
+<!-- ═══ TRADE LOG ═══ -->
+<section class="trade-log">
+  <div class="log-head"><span>LIVE TRADE LOG</span><span>SIMULATION MODE</span></div>
+  <div class="log-table-wrapper">
+    <table class="log-table">
+      <thead><tr><th>Time</th><th>Ticker</th><th>Type</th><th>Price</th><th>Conf</th><th>Stars</th><th>Reason</th></tr></thead>
+      <tbody id="logBody"><tr><td colspan="7" style="text-align:center;color:var(--text-dim);padding:14px;">Awaiting signals...</td></tr></tbody>
+    </table>
   </div>
-</div>
+</section>
 
 <script>
 // ═══════════════════════════════════════════════════════════════
@@ -388,6 +324,8 @@ function selectTicker(ticker) {
   const el = document.getElementById('ticker-' + ticker);
   if (el) el.classList.add('active');
   document.getElementById('chartTicker').textContent = ticker;
+  const st = document.getElementById('signalTicker');
+  if (st) st.textContent = ticker;
   if (ws && ws.readyState === WebSocket.OPEN) {
     ws.close();
   }
@@ -518,6 +456,17 @@ function updateTickerPrice(ticker, price, change) {
     priceEl.style.color = change >= 0 ? 'var(--accent)' : 'var(--red)';
     setTimeout(() => { priceEl.style.color = ''; }, 300);
   }
+  if (ticker === activeTicker) {
+    const hp = document.getElementById('heroPrice');
+    const hc = document.getElementById('heroCents');
+    if (hp && hc) {
+      const parts = Number(price).toFixed(2).split('.');
+      hp.textContent = parts[0];
+      hc.textContent = '.' + parts[1];
+    }
+    const lp = document.getElementById('lastPrice');
+    if (lp) lp.textContent = 'LAST ' + Number(price).toFixed(2);
+  }
   if (changeEl) {
     changeEl.textContent = change ? (change >= 0 ? '+' : '') + Number(change).toFixed(2) + '%' : '--';
     changeEl.className = 'ticker-change ' + (change >= 0 ? 'up' : 'down');
@@ -546,6 +495,18 @@ function updateSignalDisplay(signal, data) {
       <div><span>Take Profit</span><span style="color:var(--accent)">${signal.take_profit ? '$'+Number(signal.take_profit).toFixed(2) : '--'}</span></div>
     `;
   }
+  const hb = document.getElementById('heroDelta');
+  if (hb) {
+    const pred = data && data.predicted_price ? Number(data.predicted_price) : null;
+    const cur = data && data.current_price ? Number(data.current_price) : null;
+    if (pred && cur) {
+      const pct = ((pred - cur) / cur) * 100;
+      hb.textContent = 'TARGET $' + pred.toFixed(2) + ' / ' +
+        (pct >= 0 ? '+' : '') + pct.toFixed(2) + '% FROM LAST';
+    } else {
+      hb.textContent = 'TARGET — / — FROM LAST';
+    }
+  }
 }
 
 function updateConfidenceGauge(confidence) {
@@ -559,7 +520,7 @@ function updateConfidenceGauge(confidence) {
   const x = cx + r * Math.cos(Math.PI - angle);
   const y = cy - r * Math.sin(Math.PI - angle);
   arc.setAttribute('d', `M5 45 A 35 35 0 ${val > 50 ? 1 : 0} 1 ${x} ${y}`);
-  arc.setAttribute('stroke', val > 75 ? 'var(--accent)' : val > 40 ? 'var(--blue)' : 'var(--red)');
+  arc.setAttribute('stroke', val > 75 ? '#2E5EAA' : val > 40 ? '#111111' : '#B4361F');
 }
 
 function updatePortfolio(data) {
@@ -636,6 +597,8 @@ function setStatus(status) {
   const badge = document.getElementById('modeBadge');
   if (!led || !text || !badge) return;
   led.className = 'led';
+  const hm = document.getElementById('heroMode');
+  if (hm) hm.textContent = status === 'live' ? 'LIVE' : status === 'sim' ? 'SIMULATION' : 'OFFLINE';
   if (status === 'live') {
     led.classList.add('live');
     text.textContent = 'LIVE';
@@ -699,34 +662,34 @@ function initCharts() {
   mainChart = LightweightCharts.createChart(document.getElementById('main-chart'), {
     layout: {
       background: { color: 'transparent' },
-      textColor: '#8890a8',
-      fontSize: 10,
-      fontFamily: "'JetBrains Mono', monospace",
+      textColor: '#4A4539',
+      fontSize: 11,
+      fontFamily: "'Space Mono', monospace",
     },
     grid: {
-      vertLines: { color: 'rgba(26, 35, 64, 0.5)' },
-      horzLines: { color: 'rgba(26, 35, 64, 0.5)' },
+      vertLines: { color: 'rgba(17,17,17,0.12)' },
+      horzLines: { color: 'rgba(17,17,17,0.12)' },
     },
     crosshair: { mode: 0 },
-    rightPriceScale: { borderColor: '#1a2340', scaleMargins: { top: 0.1, bottom: 0.3 } },
-    timeScale: { borderColor: '#1a2340', timeVisible: true, secondsVisible: false },
+    rightPriceScale: { borderColor: '#111111', scaleMargins: { top: 0.1, bottom: 0.3 } },
+    timeScale: { borderColor: '#111111', timeVisible: true, secondsVisible: false },
     width: document.getElementById('main-chart').clientWidth,
     height: document.getElementById('main-chart').clientHeight || 310,
   });
 
   mainSeries = mainChart.addCandlestickSeries({
-    upColor: '#00ff88', downColor: '#ff3366',
-    borderUpColor: '#00ff88', borderDownColor: '#ff3366',
-    wickUpColor: '#00ff88', wickDownColor: '#ff3366',
+    upColor: '#2E5EAA', downColor: '#E4572E',
+    borderUpColor: '#111111', borderDownColor: '#111111',
+    wickUpColor: '#111111', wickDownColor: '#111111',
   });
 
   predSeries = mainChart.addLineSeries({
-    color: '#00b4ff', lineWidth: 2, lineStyle: 2,
+    color: '#111111', lineWidth: 2, lineStyle: 2,
     lastValueVisible: true, priceLineVisible: false,
   });
 
   volumeSeries = mainChart.addHistogramSeries({
-    color: 'rgba(0, 180, 255, 0.3)',
+    color: 'rgba(17,17,17,0.18)',
     priceFormat: { type: 'volume' },
     priceScaleId: '',
     scaleMargins: { top: 0.75, bottom: 0 },
@@ -734,54 +697,54 @@ function initCharts() {
 
   // RSI chart
   rsiChart = LightweightCharts.createChart(document.getElementById('rsi-chart'), {
-    layout: { background: { color: 'transparent' }, textColor: '#8890a8', fontSize: 9 },
-    grid: { vertLines: { color: 'rgba(26,35,64,0.3)' }, horzLines: { color: 'rgba(26,35,64,0.3)' } },
-    rightPriceScale: { borderColor: '#1a2340' },
-    timeScale: { borderColor: '#1a2340' },
+    layout: { background: { color: 'transparent' }, textColor: '#4A4539', fontSize: 10 },
+    grid: { vertLines: { color: 'rgba(17,17,17,0.10)' }, horzLines: { color: 'rgba(17,17,17,0.10)' } },
+    rightPriceScale: { borderColor: '#111111' },
+    timeScale: { borderColor: '#111111' },
     width: document.getElementById('rsi-chart').clientWidth,
     height: document.getElementById('rsi-chart').clientHeight || 130,
   });
-  rsiSeries = rsiChart.addLineSeries({ color: '#ffaa00', lineWidth: 1.5, lastValueVisible: true });
+  rsiSeries = rsiChart.addLineSeries({ color: '#111111', lineWidth: 1.5, lastValueVisible: true });
   // Overbought/oversold lines
-  rsiChart.addLineSeries({ color: 'rgba(255,51,102,0.4)', lineWidth: 1, lastValueVisible: false }).setData([{time: 0, value: 70}, {time: 999999, value: 70}]);
-  rsiChart.addLineSeries({ color: 'rgba(0,255,136,0.4)', lineWidth: 1, lastValueVisible: false }).setData([{time: 0, value: 30}, {time: 999999, value: 30}]);
+  rsiChart.addLineSeries({ color: 'rgba(180,54,31,0.6)', lineWidth: 1, lastValueVisible: false }).setData([{time: 0, value: 70}, {time: 999999, value: 70}]);
+  rsiChart.addLineSeries({ color: 'rgba(46,94,170,0.6)', lineWidth: 1, lastValueVisible: false }).setData([{time: 0, value: 30}, {time: 999999, value: 30}]);
 
   // MACD chart
   macdChart = LightweightCharts.createChart(document.getElementById('macd-chart'), {
-    layout: { background: { color: 'transparent' }, textColor: '#8890a8', fontSize: 9 },
-    grid: { vertLines: { color: 'rgba(26,35,64,0.3)' }, horzLines: { color: 'rgba(26,35,64,0.3)' } },
-    rightPriceScale: { borderColor: '#1a2340' },
-    timeScale: { borderColor: '#1a2340' },
+    layout: { background: { color: 'transparent' }, textColor: '#4A4539', fontSize: 10 },
+    grid: { vertLines: { color: 'rgba(17,17,17,0.10)' }, horzLines: { color: 'rgba(17,17,17,0.10)' } },
+    rightPriceScale: { borderColor: '#111111' },
+    timeScale: { borderColor: '#111111' },
     width: document.getElementById('macd-chart').clientWidth,
     height: document.getElementById('macd-chart').clientHeight || 130,
   });
-  macdSeries = macdChart.addLineSeries({ color: '#00b4ff', lineWidth: 1.5, lastValueVisible: true });
-  macdSignalSeries = macdChart.addLineSeries({ color: '#ffaa00', lineWidth: 1, lastValueVisible: true });
-  macdHistSeries = macdChart.addHistogramSeries({ color: 'rgba(0,255,136,0.3)' });
+  macdSeries = macdChart.addLineSeries({ color: '#2E5EAA', lineWidth: 1.5, lastValueVisible: true });
+  macdSignalSeries = macdChart.addLineSeries({ color: '#E4572E', lineWidth: 1, lastValueVisible: true });
+  macdHistSeries = macdChart.addHistogramSeries({ color: 'rgba(46,94,170,0.35)' });
 
   // BB Width chart
   bbChart = LightweightCharts.createChart(document.getElementById('bb-chart'), {
-    layout: { background: { color: 'transparent' }, textColor: '#8890a8', fontSize: 9 },
-    grid: { vertLines: { color: 'rgba(26,35,64,0.3)' }, horzLines: { color: 'rgba(26,35,64,0.3)' } },
-    rightPriceScale: { borderColor: '#1a2340' },
-    timeScale: { borderColor: '#1a2340' },
+    layout: { background: { color: 'transparent' }, textColor: '#4A4539', fontSize: 10 },
+    grid: { vertLines: { color: 'rgba(17,17,17,0.10)' }, horzLines: { color: 'rgba(17,17,17,0.10)' } },
+    rightPriceScale: { borderColor: '#111111' },
+    timeScale: { borderColor: '#111111' },
     width: document.getElementById('bb-chart').clientWidth,
     height: document.getElementById('bb-chart').clientHeight || 130,
   });
-  bbSeries = bbChart.addLineSeries({ color: '#ffaa00', lineWidth: 1.5, lastValueVisible: true });
+  bbSeries = bbChart.addLineSeries({ color: '#111111', lineWidth: 1.5, lastValueVisible: true });
 
   // Equity chart
   equityChart = LightweightCharts.createChart(document.getElementById('equity-chart'), {
-    layout: { background: { color: 'transparent' }, textColor: '#8890a8', fontSize: 9 },
-    grid: { vertLines: { color: 'rgba(26,35,64,0.3)' }, horzLines: { color: 'rgba(26,35,64,0.3)' } },
-    rightPriceScale: { borderColor: '#1a2340' },
-    timeScale: { borderColor: '#1a2340' },
+    layout: { background: { color: 'transparent' }, textColor: '#4A4539', fontSize: 10 },
+    grid: { vertLines: { color: 'rgba(17,17,17,0.10)' }, horzLines: { color: 'rgba(17,17,17,0.10)' } },
+    rightPriceScale: { borderColor: '#111111' },
+    timeScale: { borderColor: '#111111' },
     width: document.getElementById('equity-chart').clientWidth,
     height: document.getElementById('equity-chart').clientHeight || 150,
   });
   equitySeries = equityChart.addLineSeries({
-    color: '#00ff88', lineWidth: 2,
-    area: { topColor: 'rgba(0,255,136,0.15)', bottomColor: 'rgba(0,255,136,0)' },
+    color: '#2E5EAA', lineWidth: 2,
+    area: { topColor: 'rgba(46,94,170,0.14)', bottomColor: 'rgba(46,94,170,0)' },
   });
 
   // Load initial demo data
@@ -809,7 +772,7 @@ function loadDemoChartData() {
     const macdVal = (Math.random() - 0.5) * 4;
     macdData.push({ time: t, value: macdVal });
     macdSig.push({ time: t, value: macdVal + (Math.random() - 0.5) * 0.5 });
-    macdHist.push({ time: t, value: (Math.random() - 0.5) * 2, color: macdVal > 0 ? 'rgba(0,255,136,0.4)' : 'rgba(255,51,102,0.4)' });
+    macdHist.push({ time: t, value: (Math.random() - 0.5) * 2, color: macdVal > 0 ? 'rgba(46,94,170,0.45)' : 'rgba(228,87,46,0.45)' });
     bbData.push({ time: t, value: 0.02 + Math.random() * 0.06 });
     price = close;
   }

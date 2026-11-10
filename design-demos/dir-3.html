@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>TradeScope — Market Geometry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; }
+  body {
+    background: #EFEDE6; color: #111;
+    font-family: "Rubik", sans-serif;
+    height: 100vh; overflow: hidden;
+    display: grid; grid-template-rows: 66px 1fr 136px;
+    padding: 0 32px;
+  }
+  .mono { font-family: "Space Mono", monospace; font-variant-numeric: tabular-nums; }
+
+  header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #111; }
+  .mark { font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+  .mark em { font-style: normal; color: #E4572E; }
+  .mark small { display: block; font-size: 9px; font-weight: 400; letter-spacing: .14em; margin-top: 2px; }
+  header .right { display: flex; gap: 22px; font-size: 9px; letter-spacing: .1em; }
+  header .right b { background: #111; color: #EFEDE6; padding: 4px 8px; }
+
+  main { display: grid; grid-template-columns: 292px 1fr 268px; gap: 22px; padding: 20px 0; min-height: 0; }
+
+  .left { display: flex; flex-direction: column; }
+  .inst { font-size: 10px; letter-spacing: .16em; }
+  .price { font-size: 84px; line-height: .88; font-weight: 700; letter-spacing: -.04em; margin-top: 6px; }
+  .price sup { font-size: 22px; font-weight: 500; vertical-align: top; margin-left: 2px; }
+  .delta { margin-top: 8px; font-size: 11px; }
+  .delta b { color: #E4572E; }
+  .under { border-top: 3px solid #111; margin-top: 14px; padding-top: 12px; }
+  .kv { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid #C9C5BA; font-size: 10px; }
+  .kv b { font-family: "Space Mono", monospace; font-size: 11px; }
+  .kv .hot { color: #E4572E; }
+  .legend { margin-top: auto; font-size: 9px; line-height: 2; letter-spacing: .08em; }
+  .legend i { display: inline-block; width: 12px; height: 12px; vertical-align: -2px; margin-right: 7px; border: 1px solid #111; }
+
+  .center { position: relative; border: 3px solid #111; background: #F4F2EB; min-width: 0; }
+  .center .cap { position: absolute; top: 10px; left: 12px; right: 12px; display: flex; justify-content: space-between; font-size: 9px; letter-spacing: .12em; z-index: 2; }
+  .center svg { width: 100%; height: 100%; display: block; }
+  .axis { font-family: "Space Mono", monospace; font-size: 9px; fill: #6E6A60; }
+
+  .right { display: flex; flex-direction: column; gap: 14px; }
+  .signal { background: #E4572E; border: 3px solid #111; padding: 14px 14px 12px; }
+  .signal .k { font-size: 9px; letter-spacing: .16em; font-weight: 600; }
+  .signal .v { font-size: 52px; line-height: .92; font-weight: 700; letter-spacing: -.02em; margin-top: 4px; }
+  .signal .c { font-size: 9px; margin-top: 6px; letter-spacing: .06em; }
+  .box { border: 3px solid #111; padding: 10px 12px; }
+  .box .k { font-size: 9px; letter-spacing: .14em; }
+  .box .v { font-size: 24px; font-weight: 700; margin-top: 2px; }
+  .box .s { font-size: 9px; margin-top: 2px; color: #6E6A60; }
+  .ticks { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+  .tick { border: 2px solid #111; padding: 7px 8px; font-size: 9px; letter-spacing: .06em; }
+  .tick b { display: block; font-family: "Space Mono", monospace; font-size: 11px; margin-top: 2px; }
+  .tick.on { background: #2E5EAA; color: #F4F2EB; border-color: #111; }
+
+  footer { border-top: 3px solid #111; display: grid; grid-template-columns: repeat(6, 1fr); }
+  footer div { padding: 12px 14px; border-right: 2px solid #111; }
+  footer div:last-child { border-right: none; }
+  footer .k { font-size: 9px; letter-spacing: .14em; }
+  footer .v { font-size: 26px; font-weight: 700; margin-top: 3px; letter-spacing: -.01em; }
+  footer .v.orange { color: #E4572E; }
+</style>
+<style>
+  /* readability floor */
+  .mark small, header .right, .inst, .legend, .center .cap, .axis,
+  .signal .k, .signal .c, .box .k, .box .s, .tick, footer .k { font-size: 12px; }
+  .delta { font-size: 14px; }
+  .kv { font-size: 13px; }
+  .kv b, .tick b { font-size: 14px; }
+  .right { gap: 10px; }
+  .signal { padding: 12px 12px 10px; }
+  .signal .v { font-size: 48px; }
+  .box { padding: 8px 10px; }
+  .tick { padding: 6px 7px; }
+  header .right { white-space: nowrap; }
+</style>
+<style>
+  /* bold yellow ground: separates this direction from both others */
+  html, body { background: #F2C94C; }
+  .center { background: #FBF4E2; }
+  .kv { border-bottom-color: rgba(17,17,17,.35); }
+  .delta b, .kv .hot, footer .v.orange { color: #7A1F10; }
+  .box .s { color: #4A4539; }
+  .axis { fill: #4A4539; }
+  .center .cap { font-size: 14px; }
+  .tick.on { background: #111; color: #F2C94C; }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="mark">TRADESCOPE <em>/</em> GEOMETRY<small>ALGORITHMIC PREDICTION / AAPL</small></div>
+    <div class="right mono"><span>SIMULATION</span><span>17:40:58 UTC</span><b>SOUND ON</b></div>
+  </header>
+
+  <main>
+    <section class="left">
+      <div class="inst mono">AAPL / NASDAQ / USD</div>
+      <div class="price">185<sup>.12</sup></div>
+      <div class="delta mono">▼ 0.00% TODAY / PREDICTED <b>182.28</b></div>
+
+      <div class="under">
+        <div class="kv"><span class="mono">RSI 14</span><b>53.93</b></div>
+        <div class="kv"><span class="mono">MACD</span><b>0.09</b></div>
+        <div class="kv"><span class="mono">BB WIDTH</span><b>0.06</b></div>
+        <div class="kv"><span class="mono">DIRECTION</span><b class="hot">DOWN</b></div>
+      </div>
+
+      <div class="legend mono">
+        <div><i style="background:#2E5EAA"></i>UP</div>
+        <div><i style="background:#E4572E"></i>DOWN</div>
+        <div><i style="background:#111"></i>PIVOT</div>
+        <div><i style="background:#C9971A"></i>PREDICTED</div>
+      </div>
+    </section>
+
+    <section class="center">
+      <div class="cap mono"><span>PRICE / 5 MONTHS / 40 SESSIONS</span><span>LAST 185.12</span></div>
+      <svg id="geo" viewBox="0 0 760 470" preserveAspectRatio="none"></svg>
+    </section>
+
+    <aside class="right">
+      <div class="signal">
+        <div class="k">SIGNAL</div>
+        <div class="v">HOLD</div>
+        <div class="c mono">CONFIDENCE 0.50</div>
+      </div>
+      <div class="box"><div class="k mono">STOP LOSS</div><div class="v">—</div><div class="s mono">no position</div></div>
+      <div class="box"><div class="k mono">TAKE PROFIT</div><div class="v">—</div><div class="s mono">no position</div></div>
+
+      <div class="ticks mono">
+        <div class="tick on">AAPL<b>185.12</b></div>
+        <div class="tick">TSLA<b>—</b></div>
+        <div class="tick">BTC-USD<b>—</b></div>
+        <div class="tick">ETH-USD<b>—</b></div>
+        <div class="tick">SPY<b>—</b></div>
+        <div class="tick">NVDA<b>—</b></div>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <div><div class="k mono">CAPITAL</div><div class="v">$100k</div></div>
+    <div><div class="k mono">RETURN</div><div class="v">0.00%</div></div>
+    <div><div class="k mono">SHARPE</div><div class="v">0.000</div></div>
+    <div><div class="k mono">SORTINO</div><div class="v">0.000</div></div>
+    <div><div class="k mono">MAX DD</div><div class="v orange">0.00%</div></div>
+    <div><div class="k mono">TRADES</div><div class="v">0</div></div>
+  </footer>
+
+<script>
+  const closes = [168,169,168.4,170,171,170.2,169.5,171.2,172,171.4,173,174,173.2,175,176,175.1,174.2,175.8,177,176.2,178,179,178.1,177.3,176.5,177.8,179.2,180,179.1,178.2,177.1,176.2,175.5,176.8,178,179.5,180.2,179.4,178.6,177.9,179.1,180.6,181.4,180.2,179.3,180.1,181.3,182.2,181.4,180.6,181.8,182.9,183.6,182.8,181.9,182.6,183.8,184.6,184.1,185.12];
+
+  // 40 deterministic candles from the close series
+  let seed = 42;
+  const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const N = 40, step = closes.length / N;
+  const candles = [];
+  for (let i = 0; i < N; i++) {
+    const a = Math.floor(i * step), b = Math.max(a + 1, Math.floor((i + 1) * step));
+    const slice = closes.slice(a, b);
+    const open = slice[0], close = slice[slice.length - 1];
+    const high = Math.max(...slice) + rnd() * 0.9;
+    const low = Math.min(...slice) - rnd() * 0.9;
+    candles.push({ open, close, high, low });
+  }
+
+  const W = 760, H = 470, TOP = 34, BOTTOM = 30, LEFT = 18, RIGHT = 58;
+  const min = 164, max = 189;
+  const y = v => TOP + (1 - (v - min) / (max - min)) * (H - TOP - BOTTOM);
+  const slot = (W - LEFT - RIGHT) / N;
+  const bw = slot * 0.62;
+
+  let out = "";
+  // large geometric circle behind the data
+  out += `<circle cx="${LEFT + (W - LEFT - RIGHT) * 0.68}" cy="${TOP + 96}" r="132" fill="none" stroke="#111" stroke-width="1.5" opacity="0.14"/>`;
+  out += `<line x1="${LEFT}" y1="${y(176)}" x2="${W - RIGHT}" y2="${y(176)}" stroke="#111" stroke-width="1" opacity="0.18"/>`;
+
+  // grid + axis
+  [168, 174, 180, 186].forEach(v => {
+    out += `<line x1="${LEFT}" y1="${y(v)}" x2="${W - RIGHT}" y2="${y(v)}" stroke="#111" stroke-width="0.7" opacity="0.12"/>`;
+    out += `<text class="axis" x="${W - RIGHT + 8}" y="${y(v) + 3}">${v}</text>`;
+  });
+  ["JUL", "AUG", "SEP", "OCT", "NOV"].forEach((m, i) => {
+    out += `<text class="axis" x="${LEFT + i * ((W - LEFT - RIGHT) / 4.3)}" y="${H - 8}">${m}</text>`;
+  });
+
+  // predicted line (yellow)
+  out += `<line x1="${LEFT}" y1="${y(182.28)}" x2="${W - RIGHT}" y2="${y(182.28)}" stroke="#C9971A" stroke-width="4"/>`;
+  out += `<text class="axis" x="${LEFT + 4}" y="${y(182.28) - 7}">PREDICTED 182.28</text>`;
+
+  candles.forEach((c, i) => {
+    const cx = LEFT + i * slot + slot / 2;
+    const up = c.close >= c.open;
+    let fill = up ? "#2E5EAA" : "#E4572E";
+    if (i % 9 === 4) fill = "#111";
+    const top = y(Math.max(c.open, c.close));
+    const bot = y(Math.min(c.open, c.close));
+    out += `<line x1="${cx}" y1="${y(c.high)}" x2="${cx}" y2="${y(c.low)}" stroke="#111" stroke-width="1.6"/>`;
+    out += `<rect x="${cx - bw / 2}" y="${top}" width="${bw}" height="${Math.max(2, bot - top)}" fill="${fill}" stroke="#111" stroke-width="1.2"/>`;
+  });
+
+  document.getElementById("geo").innerHTML = out;
+</script>
+</body>
+</html>
