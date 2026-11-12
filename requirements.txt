@@ -1,7 +1,6 @@
 # Core ML
 torch>=2.0.0
 scikit-learn>=1.3.0
-scipy>=1.11.0
 
 # Data & Finance
 yfinance>=0.2.30
@@ -17,10 +16,5 @@ websockets>=12.0
 # Scheduling
 apscheduler>=3.10.0
 
-# Config & Env
-pyyaml>=6.0
-python-dotenv>=1.0.0
-
 # Logging & Utils
-loguru>=0.7.0
 pydantic>=2.7.0
